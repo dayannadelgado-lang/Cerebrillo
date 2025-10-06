@@ -1,0 +1,96 @@
+name: cerebrillo1
+description: Aplicación de productividad y gamificación educativa.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI & Animaciones
+  cupertino_icons: ^1.0.5
+  lottie: ^3.3.1
+  animated_text_kit: ^4.2.2
+  curved_navigation_bar: ^1.0.6
+  carousel_slider: ^5.1.1
+  carousel_page_view: ^1.0.2
+  palette_generator: ^0.3.3+7
+  flutter_svg: ^2.1.1
+  flutter_colorpicker: ^1.1.0
+
+  # Multimedia
+  audioplayers: ^6.5.1
+  video_player: ^2.9.2
+
+  # Datos & Estado
+  provider: ^6.0.5
+  shared_preferences: ^2.1.1
+  path_provider: ^2.0.15
+  intl: ^0.20.2
+  table_calendar: ^3.2.0
+  flutter_local_notifications: ^19.4.2
+
+  # Firebase
+  firebase_core: ^3.15.2
+  firebase_auth: ^5.7.0
+  cloud_firestore: ^5.6.12
+  uuid: ^4.5.1
+  google_fonts: ^6.3.1
+  just_audio: ^0.10.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Assets
+  assets:
+    - assets/animations/
+    - assets/images/
+    - assets/fonts/
+    - assets/sounds/meditacion1.mp3
+    - assets/sounds/meditacion2.mp3
+    - assets/sounds/meditacion3.mp3
+    - assets/sounds/meditacion4.mp3
+    - assets/sounds/meditacion5.mp3
+    - assets/sounds/meditacion6.mp3
+    - assets/sounds/meditacion7.mp3
+
+  # Fuentes
+  fonts:
+    - family: LuckiestGuy
+      fonts:
+        - asset: assets/fonts/LuckiestGuy-Regular.ttf
+    - family: JustAnotherHand
+      fonts:
+        - asset: assets/fonts/JustAnotherHand-Regular.ttf
+    - family: Boogaloo
+      fonts:
+        - asset: assets/fonts/Boogaloo.ttf
+    - family: Chewy
+      fonts:
+        - asset: assets/fonts/Chewy.ttf
+    - family: ConcertOne
+      fonts:
+        - asset: assets/fonts/ConcertOne.ttf
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat.ttf
+    - family: Caprasimo
+      fonts:
+        - asset: assets/fonts/Caprasimo.ttf
+    - family: AbrilFatface
+      fonts:
+        - asset: assets/fonts/AbrilFatface.ttf
+    - family: SpicyRice
+      fonts:
+        - asset: assets/fonts/SpicyRice.ttf
+    - family: Bentham
+      fonts:
+        - asset: assets/fonts/Bentham.ttf

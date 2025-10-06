@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "680650555907",
+    "project_id": "cerebrillo-fe7dc",
+    "storage_bucket": "cerebrillo-fe7dc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680650555907:android:cddcc00d2d7534a4834436",
+        "android_client_info": {
+          "package_name": "com.cerebrillo.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHbHbCxXsjwEyrq3wrI7VzSP2yfiIR84c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680650555907:android:343525727b35997a834436",
+        "android_client_info": {
+          "package_name": "com.cerebrillo.app.cerebrillo1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHbHbCxXsjwEyrq3wrI7VzSP2yfiIR84c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
