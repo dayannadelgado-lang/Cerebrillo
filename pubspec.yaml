@@ -9,6 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  #AR
+  webview_flutter: ^4.7.0
+  vector_math: ^2.1.4
 
   # UI & Animaciones
   cupertino_icons: ^1.0.5
@@ -40,6 +44,11 @@ dependencies:
   uuid: ^4.5.1
   google_fonts: ^6.3.1
   just_audio: ^0.10.5
+  camera: ^0.11.3
+  permission_handler: ^12.0.1
+  google_mlkit_image_labeling: ^0.14.1
+  arcore_flutter_plugin: ^0.1.0
+  arkit_plugin: ^1.2.1
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +63,7 @@ flutter:
     - assets/animations/
     - assets/images/
     - assets/fonts/
+    - assets/models/
     - assets/sounds/meditacion1.mp3
     - assets/sounds/meditacion2.mp3
     - assets/sounds/meditacion3.mp3
