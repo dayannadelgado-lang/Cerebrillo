@@ -5,6 +5,7 @@ class Task {
   final String id;
   final String title;
   final String description;
+  final String subject; // Materia de la tarea
   final bool isDone;
   final DateTime createdAt;
   final DateTime? dueDate;
@@ -14,6 +15,7 @@ class Task {
     required this.id,
     required this.title,
     required this.description,
+    required this.subject, // obligatorio ahora
     this.isDone = false,
     required this.createdAt,
     this.dueDate,
@@ -23,26 +25,31 @@ class Task {
   Task copyWith({
     String? title,
     String? description,
+    String? subject,
     bool? isDone,
     DateTime? dueDate,
+    String? lottieAsset,
   }) {
     return Task(
       id: id,
       title: title ?? this.title,
       description: description ?? this.description,
+      subject: subject ?? this.subject,
       isDone: isDone ?? this.isDone,
       createdAt: createdAt,
       dueDate: dueDate ?? this.dueDate,
-      lottieAsset: lottieAsset,
+      lottieAsset: lottieAsset ?? this.lottieAsset,
     );
   }
 
-  Widget styledTile() {
+  /// Widget estilizado para mostrar la tarea en la lista
+  Widget styledTile({VoidCallback? onTap, ValueChanged<bool?>? onChanged}) {
     return ListTile(
+      onTap: onTap,
       leading: SizedBox(
         height: 50,
         width: 50,
-        child: Image.asset(lottieAsset), // si fuera Lottie, reemplazar con Lottie.asset
+        child: Image.asset(lottieAsset), // reemplazar con Lottie.asset si quieres animación real
       ),
       title: Text(
         title,
@@ -54,7 +61,7 @@ class Task {
         ),
       ),
       subtitle: Text(
-        description,
+        '$description\nMateria: $subject',
         style: const TextStyle(
           fontFamily: 'Roboto',
           fontSize: 14,
@@ -63,9 +70,37 @@ class Task {
       ),
       trailing: Checkbox(
         value: isDone,
-        onChanged: (val) {},
+        onChanged: onChanged,
         activeColor: AppColors.accent,
       ),
+    );
+  }
+
+  /// Convierte la tarea a un Map para guardar en Firebase
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'subject': subject,
+      'isDone': isDone,
+      'createdAt': createdAt,
+      'dueDate': dueDate,
+      'lottieAsset': lottieAsset,
+    };
+  }
+
+  /// Crea una tarea a partir de un Map de Firebase
+  factory Task.fromMap(Map<String, dynamic> map) {
+    return Task(
+      id: map['id'] ?? '',
+      title: map['title'] ?? '',
+      description: map['description'] ?? '',
+      subject: map['subject'] ?? 'General',
+      isDone: map['isDone'] ?? false,
+      createdAt: (map['createdAt'] as dynamic).toDate(),
+      dueDate: map['dueDate'] != null ? (map['dueDate'] as dynamic).toDate() : null,
+      lottieAsset: map['lottieAsset'] ?? 'assets/animations/recordatorio.json',
     );
   }
 }

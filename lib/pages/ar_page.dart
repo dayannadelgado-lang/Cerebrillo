@@ -1,144 +1,380 @@
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
+
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
-// ignore: unused_import
-import '../utils/colors.dart';
+import 'package:cerebrillo1/pages/home_page.dart';
+import 'package:cerebrillo1/ar_marker_ml_screen.dart';
+import 'package:cerebrillo1/ar_native_screen.dart';
+import 'package:cerebrillo1/ar_viewer_screen.dart';
 
-import '../ar_viewer_screen.dart';     // V1 (Web)
-import '../ar_marker_ml_screen.dart'; // V2 (ML Kit)
-import '../ar_native_screen.dart';      // V3 (Nativa)
-
-class ARPage extends StatelessWidget {
+class ARPage extends StatefulWidget {
   const ARPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Definimos el color de tu marca para reusarlo
-    const Color brandColor = Color.fromARGB(255, 255, 136, 182);
+  State<ARPage> createState() => _ARPageState();
+}
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('AR Cerebrillo'),
-        backgroundColor: brandColor,
-      ),
-      
-      // 2. REEMPLAZAMOS EL BODY CON UNA LISTA DE BOTONES
-      // Usamos ListView para que se pueda desplazar en pantallas pequeñas
-      body: ListView(
-        padding: const EdgeInsets.all(24.0),
-        children: [
-          // --- Botón para la Versión 1 ---
-          _buildARButton(
-            context: context,
-            title: 'V1: Visor Web (Cerebro)',
-            subtitle: 'Multiplataforma. Rápido y ligero.',
-            icon: Icons.public,
-            color: brandColor,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ARViewerScreen(
-                    modelUrl: "httpsS://modelviewer.dev/shared-assets/models/BrainStem.glb",
-                    iosModelUrl: "https://modelviewer.dev/shared-assets/models/BrainStem.usdz",
-                  ),
-                ),
-              );
-            },
-          ),
-          
-          const SizedBox(height: 20), // Espaciador
+class _ARPageState extends State<ARPage> with TickerProviderStateMixin {
+  late AnimationController _borderController;
+  late AnimationController _tapAnimationController;
+  late AnimationController _titleMovementController;
+  late AnimationController _menuZoomController;
 
-          // --- Botón para la Versión 2 ---
-          _buildARButton(
-            context: context,
-            title: 'V2: Escáner de Marcador (ML)',
-            subtitle: 'Multiplataforma. Reconoce imágenes.',
-            icon: Icons.document_scanner_outlined,
-            color: brandColor,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ARMarkerMLScreen(),
-                ),
-              );
-            },
-          ),
+  int _selectedBottomIndex = 2;
 
-          const SizedBox(height: 20), // Espaciador
+  @override
+  void initState() {
+    super.initState();
 
-          // --- Botón para la Versión 3 ---
-          _buildARButton(
-            context: context,
-            title: 'V3: RA Nativa (ARCore/ARKit)',
-            subtitle: 'Android/iOS. Máxima potencia.',
-            icon: Icons.view_in_ar,
-            color: brandColor,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ARNativeScreen(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+    _borderController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 4))
+          ..repeat(reverse: true);
+
+    _tapAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+      lowerBound: 0.0,
+      upperBound: 0.1,
     );
+
+    _titleMovementController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true);
+
+    _menuZoomController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..repeat(reverse: true);
   }
 
-  // --- WIDGET DE AYUDA PARA CREAR LOS BOTONES ---
-  // (Lo pongo aquí mismo para mantenerlo simple)
-  Widget _buildARButton({
-    required BuildContext context,
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onPressed,
-  }) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color.withAlpha(26), // Color de fondo suave
-        foregroundColor: color, // Color del texto y del icono
-        elevation: 0, // Sin sombra
-        padding: const EdgeInsets.all(20.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          side: BorderSide(color: color, width: 1.5), // Borde del color
+  @override
+  void dispose() {
+    _borderController.dispose();
+    _tapAnimationController.dispose();
+    _titleMovementController.dispose();
+    _menuZoomController.dispose();
+    super.dispose();
+  }
+
+  void _onMenuTap(int index) {
+    setState(() => _selectedBottomIndex = index);
+    if (index == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => HomePage(onThemeChanged: (bool value) {}),
         ),
-      ),
-      onPressed: onPressed,
-      child: Row(
+      );
+    } else if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const ARPage(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Color pastelPink = const Color(0xFFF9D1E0);
+    final Color pastelPurple = const Color(0xFFD5C4F2);
+    final Color pastelBlue = const Color(0xFFBFE0F9);
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Stack(
         children: [
-          Icon(icon, size: 40),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          /// 🌄 Fondo con imagen
+          SizedBox.expand(
+            child: Image.asset(
+              "assets/images/fondologro1.jpg",
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          SafeArea(
+            child: Stack(
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                /// 🔝 Header con título animado
+                Positioned(
+                  top: 18,
+                  left: 16,
+                  right: 16,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // 🔙 Botón regresar
+                      Container(
+                        decoration: BoxDecoration(
+                          color: pastelBlue,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: pastelBlue.withOpacity(0.5),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    HomePage(onThemeChanged: (bool value) {}),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                      // ✨ Título con movimiento oscilante
+                      AnimatedBuilder(
+                        animation: _titleMovementController,
+                        builder: (context, child) {
+                          double dx = math.sin(_titleMovementController.value * 2 * math.pi) * 10;
+                          return Transform.translate(
+                            offset: Offset(dx, 0),
+                            child: const Text(
+                              "AR - CEREBRILLO",
+                              style: TextStyle(
+                                fontFamily: "Montserrat",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                                color: Colors.black,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+
+                      // 💙 Botón favoritos
+                      Container(
+                        decoration: BoxDecoration(
+                          color: pastelBlue,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: pastelBlue.withOpacity(0.5),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.favorite_border_rounded,
+                              color: Colors.white),
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  "Próximamente tus modelos favoritos 💗",
+                                  textAlign: TextAlign.center,
+                                ),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 14,
+
+                /// 🧠 Widgets AR
+                Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 22),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildARWidget(
+                          title: "Visor Cerebro 3D",
+                          icon: Icons.public,
+                          baseColors: [pastelPink, pastelPurple],
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ARViewerScreen(
+                                  modelUrl:
+                                      "https://modelviewer.dev/shared-assets/models/BrainStem.glb",
+                                  iosModelUrl:
+                                      "https://modelviewer.dev/shared-assets/models/BrainStem.usdz",
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 28),
+                        _buildARWidget(
+                          title: "Escáner de Marcador",
+                          icon: Icons.document_scanner_outlined,
+                          baseColors: [pastelPurple, pastelBlue],
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const ARMarkerMLScreen()),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 28),
+                        _buildARWidget(
+                          title: "RA Nativa (ARCore / ARKit)",
+                          icon: Icons.view_in_ar,
+                          baseColors: [pastelBlue, pastelPink],
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const ARNativeScreen()),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.arrow_forward_ios, size: 16),
         ],
       ),
+
+      /// 🔻 Menú inferior animado
+      bottomNavigationBar: AnimatedBuilder(
+        animation: _menuZoomController,
+        builder: (context, child) {
+          double zoom = 1 + 0.15 * math.sin(_menuZoomController.value * 2 * math.pi);
+          return Container(
+            color: Colors.transparent,
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildMenuItem(Icons.home, 0),
+                _buildMenuItem(Icons.chat, 1),
+                Transform.scale(
+                  scale: zoom,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [pastelBlue, pastelPurple],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: pastelBlue.withOpacity(0.6),
+                          blurRadius: 12,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(10),
+                    child: const Icon(Icons.view_in_ar,
+                        color: Colors.white, size: 36),
+                  ),
+                ),
+                _buildMenuItem(Icons.favorite, 3),
+                _buildMenuItem(Icons.settings, 4),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(IconData icon, int index) {
+    final isSelected = _selectedBottomIndex == index;
+    return GestureDetector(
+      onTap: () => _onMenuTap(index),
+      child: Icon(
+        icon,
+        color: isSelected ? const Color(0xFFBFE0F9) : Colors.grey[400],
+        size: isSelected ? 30 : 26,
+      ),
+    );
+  }
+
+  /// 🎨 Widget AR (sin blanco en los gradientes)
+  Widget _buildARWidget({
+    required String title,
+    required IconData icon,
+    required List<Color> baseColors,
+    required VoidCallback onPressed,
+  }) {
+    return AnimatedBuilder(
+      animation: _borderController,
+      builder: (context, child) {
+        final t = _borderController.value;
+        final animatedColors = [
+          Color.lerp(baseColors[0], baseColors[1], (math.sin(t * 2 * math.pi) + 1) / 2)!,
+          Color.lerp(baseColors[1], baseColors[0], (math.cos(t * 2 * math.pi) + 1) / 2)!,
+        ];
+
+        return GestureDetector(
+          onTapDown: (_) => _tapAnimationController.forward(),
+          onTapUp: (_) async {
+            _tapAnimationController.reverse();
+            await Future.delayed(const Duration(milliseconds: 150));
+            onPressed();
+          },
+          child: Transform.scale(
+            scale: 1 - _tapAnimationController.value,
+            child: Container(
+              height: 120,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(26),
+                gradient: LinearGradient(
+                  colors: animatedColors,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: animatedColors.last.withOpacity(0.5),
+                    blurRadius: 15,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const SizedBox(width: 18),
+                  Icon(icon, color: Colors.white, size: 42),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "Montserrat",
+                      ),
+                    ),
+                  ),
+                  const Icon(Icons.arrow_forward_ios_rounded,
+                      color: Colors.white70),
+                  const SizedBox(width: 16),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

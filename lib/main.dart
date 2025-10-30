@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
 
 // Páginas principales
@@ -26,6 +27,17 @@ Future<void> main() async {
     } else {
       debugPrint("⚠️ Firebase ya estaba inicializado, se omite inicialización");
     }
+
+    // 🔹 PRUEBA FIRESTORE
+    try {
+      await FirebaseFirestore.instance
+          .collection('test_connection')
+          .add({'timestamp': FieldValue.serverTimestamp(), 'status': 'ok'});
+      debugPrint("✅ Firestore conectado correctamente");
+    } catch (e) {
+      debugPrint("❌ Error conectando a Firestore: $e");
+    }
+
   } catch (e, st) {
     debugPrint("❌ Error inicializando Firebase: $e\n$st");
   }
@@ -55,14 +67,12 @@ class _CerebrilloAppState extends State<CerebrilloApp> {
       title: 'Cerebrillo',
       debugShowCheckedModeBanner: false,
 
-      // 🔹 Tema claro (tu diseño actual, no lo tocamos)
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
         fontFamily: 'Montserrat',
         scaffoldBackgroundColor: const Color(0xFFF0F2F5),
       ),
 
-      // 🔹 Tema oscuro inicial (luego personalizamos pantalla por pantalla)
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: Colors.black,
@@ -82,15 +92,15 @@ class _CerebrilloAppState extends State<CerebrilloApp> {
       themeMode: _themeMode, // 🔹 Control del tema
 
       home: InicioPage(
-        onThemeChanged: _toggleTheme, // 🔹 Paso el callback al inicio
+        onThemeChanged: _toggleTheme,
       ),
 
       routes: {
-        '/welcome': (context) => WelcomePage(onThemeChanged: (bool isDark) {  },),
-        '/login': (context) => LoginPage(onThemeChanged: (bool isDark) {  },),
-        '/register': (context) => RegisterPage(onThemeChanged: (bool isDark) {  },),
+        '/welcome': (context) => WelcomePage(onThemeChanged: (bool isDark) {}),
+        '/login': (context) => LoginPage(onThemeChanged: (bool isDark) {}),
+        '/register': (context) => RegisterPage(onThemeChanged: (bool isDark) {}),
         '/survey': (context) => SurveyPage(onSurveyComplete: (List<int> answers) {}),
-        '/home': (context) => HomePage(onThemeChanged: (bool isDark) {  },),
+        '/home': (context) => HomePage(onThemeChanged: (bool isDark) {}),
       },
     );
   }
